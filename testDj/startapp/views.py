@@ -5,12 +5,8 @@ from .models import Movie
 
 
 def home(request):
-    Movie()
-    return render(request, 'home.html')
-
-
-def about(request):
-    return HttpResponse("<h2>Lol it works<h2>")
+    movies = '<br>\n'.join([str(i) for i in Movie.objects.all()])
+    return HttpResponse(f" <br> {movies}")
 
 
 class MovieList(ListView):
