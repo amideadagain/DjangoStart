@@ -23,7 +23,6 @@ class Command(BaseCommand):
             self.stdout.write('Start inserting movies')
 
             movie = Movie()
-            actor = Actor()
 
             new_title = ' '.join(faker.text().split()[:randint(2, 6)])
             movie.title = new_title
@@ -34,6 +33,7 @@ class Command(BaseCommand):
             movie.save()
 
             for _ in range(randint(1, 10)):
+                actor = Actor()
                 actor.first_name = ' '.join(faker.name().split()[:1])
                 actor.last_name = ' '.join(faker.name().split()[1:])
                 actor.save()
