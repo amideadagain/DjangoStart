@@ -33,23 +33,23 @@ class MovieDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # context["image_form"] = self.movie_image_form()
-        # if self.request.user.is_aunthenticated:
-        vote = Vote.objects.get_vote_or_unsaved_blank_vote(
-            movie=self.object  # user=self.request.user
-        )
-        if vote.id:
-            vote_form_url = reverse(
-                "update-vote", kwargs={"movie_id": vote.movie.id, "pk": vote.id}
+        if self.request.user.is_authenticated:
+            vote = Vote.objects.get_vote_or_unsaved_blank_vote(
+                movie=self.object, user=self.request.user
             )
-        else:
-            vote_form_url = reverse(
-                "create-vote", kwargs={"movie_id": self.object.id}
-            )
-        vote_form = VoteForm(instance=vote)
-        context["vote_form"] = vote_form
-        context["vote_form_url"] = vote_form_url
+            if vote.id:
+                vote_form_url = reverse(
+                    "update-vote", kwargs={"movie_id": vote.movie.id, "pk": vote.id}
+                )
+            else:
+                vote_form_url = reverse(
+                    "create-vote", kwargs={"movie_id": self.object.id}
+                )
+            vote_form = VoteForm(instance=vote)
+            context["vote_form"] = vote_form
+            context["vote_form_url"] = vote_form_url
 
-        return context
+            return context
 
 
 class TopMovies(ListView):
@@ -62,13 +62,12 @@ class TopMovies(ListView):
         return qs
 
 
-# LoginRequiredMixin
-class CreateVote(CreateView):
+class CreateVote(LoginRequiredMixin, CreateView):
     form_class = VoteForm
 
     def get_initial(self):
         initial = super().get_initial()
-        # initial["user"] = self.request.user.id
+        initial["user"] = self.request.user.id
         initial["movie"] = self.kwargs["movie_id"]
         return initial
 
@@ -82,16 +81,15 @@ class CreateVote(CreateView):
         return redirect(to=movie_detail_url)
 
 
-# LoginRequiredMixin
-class UpdateVote(UpdateView):
+class UpdateVote(LoginRequiredMixin, UpdateView):
     form_class = VoteForm
     queryset = Vote.objects.all()
 
     def get_object(self, queryset=None):
         vote = super().get_object(queryset)
-        # user = self.request.user
-        # if vote.user != user:
-        #     raise PermissionDenied("cannot change")
+        user = self.request.user
+        if vote.user != user:
+            raise PermissionDenied("cannot change" "users vote")
         return vote
 
     def get_success_url(self):

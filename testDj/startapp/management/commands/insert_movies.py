@@ -39,12 +39,5 @@ class Command(BaseCommand):
                 actor.save()
                 movie.actors.add(actor)
 
-            vote = Vote()
-
-            vote.value = randint(0, 20)
-            vote.movie = movie
-
-            vote.save()
-
             self.stdout.write(f'New movie: {movie}')
         self.stdout.write('End inserting movies')

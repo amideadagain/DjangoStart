@@ -17,8 +17,13 @@ class Actor(models.Model):
 
 
 class MovieManager(models.Manager):
-    def full_length_movies(self, time):
+    def full_length_movies(self, time=100):
         return self.filter(runtime__gt=time)
+
+    def all_about_movie(self):
+        qs = self.get_queryset()
+        qs = qs.annotate(vote_sum=Sum("vote__value"))
+        return qs
 
     def top_movies(self, limit=10):
         qs = self.get_queryset()
@@ -26,11 +31,6 @@ class MovieManager(models.Manager):
         qs = qs.exclude(vote_sum=None)
         qs = qs.order_by("-vote_sum")
         qs = qs[:limit]
-        return qs
-
-    def all_about_movie(self):
-        qs = self.get_queryset()
-        qs = qs.annotate(vote_sum=Sum("vote__value"))
         return qs
 
 
@@ -86,14 +86,11 @@ def movie_directory_path_with_uuid(instance, filename):
 
 
 class VoteManager(models.Manager):
-    # def get_vote_or_unsaved_blank_vote(self, movie, user):
-    def get_vote_or_unsaved_blank_vote(self, movie):
+    def get_vote_or_unsaved_blank_vote(self, movie, user):
         try:
-            return Vote.objects.get(movie=movie)
-            # return Vote.objects.get(movie=movie, user=user)
+            return Vote.objects.get(movie=movie, user=user)
         except Vote.DoesNotExist:
-            return Vote(movie=movie)
-            # return Vote(movie=movie, user=user)
+            return Vote(movie=movie, user=user)
 
 
 class Vote(models.Model):
@@ -102,13 +99,18 @@ class Vote(models.Model):
     VOTE_CHOICES = (
         (
             UP,
+            "UP",
         ),
         (
             DOWN,
+            "DOWN",
         )
     )
-    value = models.IntegerField(default=0)
-    # user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    value = models.IntegerField(choices=VOTE_CHOICES, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
 
     objects = VoteManager()
+
+    # class Meta:
+    #     unique_together = ('user', 'movie')
