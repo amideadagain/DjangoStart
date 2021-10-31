@@ -3,7 +3,7 @@ from faker import Faker
 from random import randint
 from datetime import datetime
 
-from startapp.models import Movie, Actor  # Role
+from startapp.models import Movie, Actor, Vote  # Role
 
 
 class Command(BaseCommand):
@@ -38,6 +38,13 @@ class Command(BaseCommand):
                 actor.last_name = ' '.join(faker.name().split()[1:])
                 actor.save()
                 movie.actors.add(actor)
+
+            vote = Vote()
+
+            vote.value = randint(0, 20)
+            vote.movie = movie
+
+            vote.save()
 
             self.stdout.write(f'New movie: {movie}')
         self.stdout.write('End inserting movies')

@@ -1,8 +1,16 @@
 from django.contrib import admin
-from .models import Movie, Actor
+from .models import Movie, Actor  #MovieImage
+
+
+# class MovieImagesInLine(admin.StackedInline):
+#     model = MovieImage
+#     extra = 1
 
 
 class MovieAdmin(admin.ModelAdmin):
+    inlines = [
+        # MovieImagesInLine
+    ]
     list_display = ("title", "year", "rating")
     list_filter = ("rating", "year")
     fields = (
