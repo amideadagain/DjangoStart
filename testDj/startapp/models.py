@@ -74,8 +74,8 @@ class Movie(models.Model):
 #     character_name = models.CharField(max_length=50)
 
 
-def movie_directory_path_with_uuid(instance, filename):
-    return "{}/{}.{}".format(instance.movie_id, uuid4(), filename.split(".")[-1])
+# def movie_directory_path_with_uuid(instance, filename):
+#     return "{}/{}.{}".format(instance.movie_id, uuid4(), filename.split(".")[-1])
 
 
 # class MovieImage(models.Model):
@@ -86,29 +86,21 @@ def movie_directory_path_with_uuid(instance, filename):
 
 
 class VoteManager(models.Manager):
-    # def get_vote_or_unsaved_blank_vote(self, movie, user):
-    def get_vote_or_unsaved_blank_vote(self, movie):
+    def get_vote_or_unsaved_blank_vote(self, movie, user):
         try:
-            return Vote.objects.get(movie=movie)
-            # return Vote.objects.get(movie=movie, user=user)
-        except Vote.DoesNotExist:
-            return Vote(movie=movie)
-            # return Vote(movie=movie, user=user)
+            vote = Vote.objects.get(movie=movie, user=user)
+            return vote
+        except self.model.DoesNotExist:
+            vote = Vote(movie=movie, user=user)
+            return vote
 
 
 class Vote(models.Model):
-    UP = 1
-    DOWN = -1
-    VOTE_CHOICES = (
-        (
-            UP,
-        ),
-        (
-            DOWN,
-        )
-    )
-    value = models.IntegerField(default=0)
-    # user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    objects = VoteManager()
+
+    value = models.FloatField()
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
 
-    objects = VoteManager()
+    class Meta:
+        unique_together = ('user', 'movie')

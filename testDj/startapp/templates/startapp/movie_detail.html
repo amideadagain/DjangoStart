@@ -5,32 +5,28 @@
     <title>MovieList</title>
 </head>
 <body>
-    <h1>Movies</h1>
-    <ul>
-      <li>{{ movie.title }} - {{ movie.year }}</li>
-      <li>{{ movie.plot }}</li>
-      <li>{{ movie.rating }}</li>
-      <li>{{ movie.runtime }}</li>
-      <li>{{ movie.actors }}</li>
-    </ul>
+    <h1>{{ object }}</h1>
+<p class="lead">
+{{ object.summary }}
+</p>
 
-    <div>
-        <h2>
-            Score: {{ object.score|default_if_none:"TBD" }}
-        </h2>
-    </div>
-
-    <div>
-        <form
-            method="post"
-            action="{{ vote_form_url }}" >
-            {% csrf_token %}
-            {{ vote_form.as_p }}
-            <button
-                class="btn btn-primary" type="submit" >
-                Vote
-            </button>
-        </form>
-    </div>
+ {# rating div omitted #}
+  <div>
+    {% if vote_form %}
+      <form
+          method="post"
+          action="{{ vote_form_url }}" >
+        {% csrf_token %}
+        {{ vote_form.as_p }}
+        <button
+            class="btn btn-primary" >
+          Vote
+        </button >
+      </form >
+    <h3>Score: {{ object.score|default_if_none:"No score yet!" }}</h3>
+    {% else %}
+      <p >Log in to vote for this movie</p >
+    {% endif %}
+  </div >
 </body>
 </html>
