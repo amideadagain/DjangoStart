@@ -16,9 +16,21 @@ class VoteForm(forms.ModelForm):
         model = Vote
         fields = (
             "value",
-            # "user",
             "movie",
         )
 
 
-# class MovieImageForm(forms.ModelForm):
+class MovieForm(forms.ModelForm):
+    class Meta:
+        model = Movie
+        fields = (
+            "title",
+            "plot",
+            "year",
+            "rating",
+            "runtime",
+        )
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'forms-input'}),
+            'plot': forms.TextInput(attrs={'cols': 100, 'rows': 30}),
+        }

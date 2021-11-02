@@ -33,5 +33,18 @@
         {% endif %}
     </ul>
     {% endif %}
+    <div>
+        <h2> Add new movie </h2>
+        <form
+            method="post"
+            action="{{ movie_form_url }}" >
+            {% csrf_token %}
+            {{ movie_form.as_p }}
+            <button
+                type="submit", name="create" >
+                Add
+            </button>
+        </form>
+    </div>
     <br> I'm too lazy to add any css and boostrap today. I will do it someday. Maybe. Eventually. </br>
 {% endblock content %}

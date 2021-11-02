@@ -86,14 +86,11 @@ def movie_directory_path_with_uuid(instance, filename):
 
 
 class VoteManager(models.Manager):
-    # def get_vote_or_unsaved_blank_vote(self, movie, user):
     def get_vote_or_unsaved_blank_vote(self, movie):
         try:
             return Vote.objects.get(movie=movie)
-            # return Vote.objects.get(movie=movie, user=user)
         except Vote.DoesNotExist:
             return Vote(movie=movie)
-            # return Vote(movie=movie, user=user)
 
 
 class Vote(models.Model):

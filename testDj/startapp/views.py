@@ -3,9 +3,10 @@ from django.core.exceptions import (PermissionDenied)
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic.edit import ModelFormMixin
 from django.urls import reverse
 
-from .forms import VoteForm
+from .forms import VoteForm, MovieForm
 from .models import Movie, Vote
 
 
@@ -14,9 +15,23 @@ def home(request):
     return HttpResponse(f"Films <br> {movies}")
 
 
-class MovieList(ListView):
+class MovieList(ListView, ModelFormMixin):
     model = Movie
+    form_class = MovieForm
     paginate_by = 10
+
+    def get(self, request, *args, **kwargs):
+        self.object = None
+        self.form = self.get_form(self.form_class)
+        return ListView.get(self, request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = None
+        self.form = self.get_form(self.form_class)
+
+        if self.form.is_valid():
+            self.object = self.form.save()
+        return self.get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(MovieList, self).get_context_data(**kwargs)
@@ -24,6 +39,7 @@ class MovieList(ListView):
         paginator = context["paginator"]
         context["page_is_first"] = page.number == 1
         context["page_is_last"] = page.number == paginator.num_pages
+        context["movie_form"] = self.form
         return context
 
 
@@ -32,10 +48,8 @@ class MovieDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # context["image_form"] = self.movie_image_form()
-        # if self.request.user.is_aunthenticated:
         vote = Vote.objects.get_vote_or_unsaved_blank_vote(
-            movie=self.object  # user=self.request.user
+            movie=self.object
         )
         if vote.id:
             vote_form_url = reverse(
@@ -54,7 +68,6 @@ class MovieDetail(DetailView):
 
 class TopMovies(ListView):
     template_name = "startapp/top_movies.html"
-    queryset = Movie.objects.top_movies(limit=10)
 
     def get_queryset(self):
         limit = 10
@@ -62,13 +75,11 @@ class TopMovies(ListView):
         return qs
 
 
-# LoginRequiredMixin
 class CreateVote(CreateView):
     form_class = VoteForm
 
     def get_initial(self):
         initial = super().get_initial()
-        # initial["user"] = self.request.user.id
         initial["movie"] = self.kwargs["movie_id"]
         return initial
 
@@ -82,16 +93,12 @@ class CreateVote(CreateView):
         return redirect(to=movie_detail_url)
 
 
-# LoginRequiredMixin
 class UpdateVote(UpdateView):
     form_class = VoteForm
     queryset = Vote.objects.all()
 
     def get_object(self, queryset=None):
         vote = super().get_object(queryset)
-        # user = self.request.user
-        # if vote.user != user:
-        #     raise PermissionDenied("cannot change")
         return vote
 
     def get_success_url(self):
