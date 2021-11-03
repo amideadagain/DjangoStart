@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 from django.db import models
-from django.conf import settings
+# from django.conf import settings
 from django.db.models.aggregates import Sum
 
 
@@ -32,6 +32,7 @@ class MovieManager(models.Manager):
         qs = self.get_queryset()
         qs = qs.annotate(vote_sum=Sum("vote__value"))
         return qs
+# not gonna change this manager yet, gonna need it anyways when I will be making normal voting system with users
 
 
 class Movie(models.Model):
@@ -94,16 +95,6 @@ class VoteManager(models.Manager):
 
 
 class Vote(models.Model):
-    UP = 1
-    DOWN = -1
-    VOTE_CHOICES = (
-        (
-            UP,
-        ),
-        (
-            DOWN,
-        )
-    )
     value = models.IntegerField(default=0)
     # user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
