@@ -13,6 +13,13 @@ class MovieSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['title', 'plot', 'year', 'rating', 'runtime', 'actors', 'vote']
 
 
+class VoteSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Vote
+        fields = ['value', 'movie_id']
+
+
 class ActorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Actor

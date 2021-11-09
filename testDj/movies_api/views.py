@@ -5,9 +5,10 @@ from rest_framework import authentication, permissions
 from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.decorators import action
+from rest_framework_extensions.mixins import NestedViewSetMixin
 
-from startapp.models import Movie, MovieManager, Actor
-from .serializers import MovieSerializer, ActorSerializer
+from startapp.models import Movie, MovieManager, Actor, Vote, VoteManager
+from .serializers import MovieSerializer, ActorSerializer, VoteSerializer
 
 
 class MovieList(APIView):
@@ -20,7 +21,7 @@ class MovieList(APIView):
         return Response(movies)
 
 
-class MovieViewSet(viewsets.ModelViewSet):
+class MovieViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
 
@@ -64,6 +65,19 @@ class MovieViewSet(viewsets.ModelViewSet):
         queryset = Movie.objects.top_movies(limit=limit)
         return self.paginate_movies_api(request, queryset)
 
+
+class VoteViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+    queryset = Vote.objects.all()
+    serializer_class = VoteSerializer
+
+    def update(self, request, parent_lookup_movie_id, pk=None):
+        pk = parent_lookup_movie_id
+        queryset = Vote.objects.api_get(pk)
+
+        serializer = VoteSerializer(queryset, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+        return Response(serializer.data)
 
 # it isn't in a task, added this as a tool
 # class ActorViewSet(viewsets.ModelViewSet):

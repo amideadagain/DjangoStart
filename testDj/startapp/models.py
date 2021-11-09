@@ -101,6 +101,15 @@ class VoteManager(models.Manager):
         except Vote.DoesNotExist:
             return Vote(movie=movie)
 
+    @staticmethod
+    def api_get(pk=None):
+        from rest_framework.exceptions import ValidationError
+        try:
+            queryset = Vote.objects.get(pk=pk)
+        except Movie.DoesNotExist as e:
+            raise ValidationError
+        return queryset
+
 
 class Vote(models.Model):
     value = models.IntegerField(default=0)
