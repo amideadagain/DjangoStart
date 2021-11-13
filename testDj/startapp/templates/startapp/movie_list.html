@@ -34,6 +34,7 @@
     </ul>
     {% endif %}
     <div>
+        {% if movie_form %}
         <h2> Add new movie </h2>
         <form
             method="post"
@@ -45,6 +46,9 @@
                 Add
             </button>
         </form>
+        {% else %}
+        <p> Log in to add movies </p>
+        {% endif %}
     </div>
     <br> I'm too lazy to add any css and boostrap today. I will do it someday. Maybe. Eventually. </br>
 {% endblock content %}

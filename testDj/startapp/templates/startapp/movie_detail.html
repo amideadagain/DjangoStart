@@ -21,6 +21,7 @@
     </div>
 
     <div>
+        {% if vote_form %}
         <form
             method="post"
             action="{{ vote_form_url }}" >
@@ -31,6 +32,9 @@
                 Vote
             </button>
         </form>
+        {% else %}
+        <p> Log in to vote </p>
+        {% endif %}
     </div>
 </body>
 </html>

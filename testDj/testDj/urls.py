@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('startapp.urls')),
     path('api/v1/', include(('movies_api.urls', 'movies_api'), namespace='movies_api')),
+    path('auth/', include(('movies_auth.urls', 'movies_auth'), namespace='movies_auth')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
