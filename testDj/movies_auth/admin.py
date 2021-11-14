@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from rest_framework.authtoken.admin import TokenAdmin
 
 from .models import MyUser
 
@@ -14,3 +15,5 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(MyUser, UserAdmin)
+
+TokenAdmin.raw_id_fields = ['user']

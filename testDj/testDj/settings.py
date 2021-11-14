@@ -37,7 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'rest_framework',
+    'rest_framework.authtoken',
+
     'movies_auth',
     'startapp',
     'movies_api'
@@ -75,6 +78,16 @@ AUTH_USER_MODEL = 'movies_auth.MyUser'
 
 WSGI_APPLICATION = 'testDj.wsgi.application'
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

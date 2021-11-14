@@ -1,11 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User as DjangoUser
 from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser)
-
-
-# class User(DjangoUser):
-#     # user = models.OneToOneField(DjangoUser, on_delete=models.CASCADE)
-#     dob = models.DateField()
+from rest_framework.authtoken.models import Token
 
 
 class MyUserManager(BaseUserManager):
@@ -41,10 +36,10 @@ class MyUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    # def get_user_token_by_credentials(self, username, password):
-    #     user = User.objects.get_by_natural_key(username=username)
-    #     if User.check_password(password):
-    #         return Token.objects.create(user=user)
+    def get_user_token_by_credentials(self, username, password):
+        user = MyUser.objects.get_by_natural_key(username=username)
+        if user.check_password(password):
+            return Token.objects.get_or_create(user=user)
 
 
 class MyUser(AbstractBaseUser):
@@ -61,9 +56,10 @@ class MyUser(AbstractBaseUser):
     is_superuser = models.BooleanField(default=False)
 
     objects = MyUserManager()
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'dob']
+    # I wanted to make login with email instead of username (as I did it in path('', views.sign_in, name='sign_in')),
+    # but cause of obtain_auth_token which uses username I have to remake it to username again, sad
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email', 'dob']
 
     def __str__(self):
         return self.email
