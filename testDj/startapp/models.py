@@ -32,7 +32,15 @@ class MovieManager(models.Manager):
         qs = self.get_queryset()
         qs = qs.annotate(vote_sum=Sum("vote__value"))
         return qs
-# not gonna change this manager yet, gonna need it anyways when I will be making normal voting system with users
+
+    @staticmethod
+    def api_get(pk=None):
+        from rest_framework.exceptions import ValidationError
+        try:
+            queryset = Movie.objects.get(pk=pk)
+        except Movie.DoesNotExist as e:
+            raise ValidationError
+        return queryset
 
 
 class Movie(models.Model):
@@ -93,10 +101,22 @@ class VoteManager(models.Manager):
         except Vote.DoesNotExist:
             return Vote(movie=movie)
 
+    @staticmethod
+    def api_get(pk=None):
+        from rest_framework.exceptions import ValidationError
+        try:
+            queryset = Vote.objects.get(pk=pk)
+        except Movie.DoesNotExist as e:
+            raise ValidationError
+        return queryset
+
 
 class Vote(models.Model):
     value = models.IntegerField(default=0)
     # user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+    movie = models.ForeignKey(Movie, related_name='vote', on_delete=models.CASCADE)
 
     objects = VoteManager()
+
+    def __str__(self):
+        return str(self.value)

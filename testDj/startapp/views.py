@@ -62,6 +62,7 @@ class MovieDetail(DetailView):
         vote_form = VoteForm(instance=vote)
         context["vote_form"] = vote_form
         context["vote_form_url"] = vote_form_url
+        context["score"] = int(vote.value)
 
         return context
 
