@@ -39,7 +39,8 @@ class MovieList(ListView, ModelFormMixin):
         paginator = context["paginator"]
         context["page_is_first"] = page.number == 1
         context["page_is_last"] = page.number == paginator.num_pages
-        context["movie_form"] = self.form
+        if self.request.user.is_authenticated:
+            context["movie_form"] = self.form
         return context
 
 
@@ -48,21 +49,23 @@ class MovieDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        vote = Vote.objects.get_vote_or_unsaved_blank_vote(
-            movie=self.object
-        )
-        if vote.id:
-            vote_form_url = reverse(
-                "update-vote", kwargs={"movie_id": vote.movie.id, "pk": vote.id}
+
+        if self.request.user.is_authenticated:
+            vote = Vote.objects.get_vote_or_unsaved_blank_vote(
+                movie=self.object
             )
-        else:
-            vote_form_url = reverse(
-                "create-vote", kwargs={"movie_id": self.object.id}
-            )
-        vote_form = VoteForm(instance=vote)
-        context["vote_form"] = vote_form
-        context["vote_form_url"] = vote_form_url
-        context["score"] = int(vote.value)
+            if vote.id:
+                vote_form_url = reverse(
+                    "update-vote", kwargs={"movie_id": vote.movie.id, "pk": vote.id}
+                )
+            else:
+                vote_form_url = reverse(
+                    "create-vote", kwargs={"movie_id": self.object.id}
+                )
+            vote_form = VoteForm(instance=vote)
+            context["vote_form"] = vote_form
+            context["vote_form_url"] = vote_form_url
+            context["score"] = int(vote.value)
 
         return context
 

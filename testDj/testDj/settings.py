@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'movies_auth',
     'startapp',
     'movies_api'
 ]
@@ -69,6 +70,8 @@ TEMPLATES = [
         },
     },
 ]
+
+AUTH_USER_MODEL = 'movies_auth.MyUser'
 
 WSGI_APPLICATION = 'testDj.wsgi.application'
 
