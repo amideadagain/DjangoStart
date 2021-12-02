@@ -1,7 +1,8 @@
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.views import APIView
+# from rest_framework.views import APIView
+from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
-from rest_framework import authentication, permissions
+# from rest_framework import authentication, permissions
 from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.decorators import action
@@ -11,19 +12,25 @@ from startapp.models import Movie, MovieManager, Actor, Vote, VoteManager
 from .serializers import MovieSerializer, ActorSerializer, VoteSerializer
 
 
-class MovieList(APIView):
+# class MovieList(APIView):
+#
+#     # authentication_classes = [authentication.TokenAuthentication]
+#     permission_classes = (permissions.IsAuthenticated,)
+#
+#     def get(self, request, format=None):
+#         movies = [movie.title for movie in Movie.objects.all()]
+#         return Response(movies)
 
-    # authentication_classes = [authentication.TokenAuthentication]
-    # permission_classes = [permissions.IsAdminUser]
 
-    def get(self, request, format=None):
-        movies = [movie.title for movie in Movie.objects.all()]
-        return Response(movies)
+class ReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS
 
 
 class MovieViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
+    permission_classes = [IsAuthenticated | ReadOnly]
 
     def paginate_movies_api(self, request, queryset):
         paginator = PageNumberPagination()
@@ -67,6 +74,7 @@ class MovieViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
 
 
 class VoteViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
     queryset = Vote.objects.all()
     serializer_class = VoteSerializer
 
