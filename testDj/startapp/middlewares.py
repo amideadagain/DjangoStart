@@ -12,5 +12,5 @@ class RequestTimeMiddleware:
 
         end_time = time.monotonic() - start_time
 
-        response["X-Request-Timing"] = f"{int(end_time * 1000)}ms"
+        response.headers["X-Request-Timing"] = f"{int(end_time * 1000)}ms"
         return response
