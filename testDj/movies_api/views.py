@@ -12,16 +12,6 @@ from startapp.models import Movie, MovieManager, Actor, Vote, VoteManager
 from .serializers import MovieSerializer, ActorSerializer, VoteSerializer
 
 
-# class MovieList(APIView):
-#
-#     # authentication_classes = [authentication.TokenAuthentication]
-#     permission_classes = (permissions.IsAuthenticated,)
-#
-#     def get(self, request, format=None):
-#         movies = [movie.title for movie in Movie.objects.all()]
-#         return Response(movies)
-
-
 class ReadOnly(BasePermission):
     def has_permission(self, request, view):
         return request.method in SAFE_METHODS
