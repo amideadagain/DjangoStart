@@ -45,7 +45,8 @@ class MovieList(ListView, ModelFormMixin):
 
 
 class MovieDetail(DetailView):
-    queryset = Movie.objects.all_about_movie()
+    queryset = Movie.objects.get_queryset()
+    # queryset = Movie.objects.all_about_movie()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

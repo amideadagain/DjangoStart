@@ -1,7 +1,6 @@
 from uuid import uuid4
 
 from django.db import models
-# from django.conf import settings
 from django.db.models.aggregates import Sum
 
 
@@ -28,10 +27,11 @@ class MovieManager(models.Manager):
         qs = qs[:limit]
         return qs
 
-    def all_about_movie(self):
-        qs = self.get_queryset()
-        qs = qs.annotate(vote_sum=Sum("vote__value"))
-        return qs
+    # could need it when voting will be remade
+    # def all_about_movie(self):
+    #     qs = self.get_queryset()
+    #     qs = qs.annotate(vote_sum=Sum("vote__value"))
+    #     return qs
 
     @staticmethod
     def api_get(pk=None):
@@ -59,7 +59,7 @@ class Movie(models.Model):
     plot = models.TextField()
     year = models.PositiveSmallIntegerField()
     rating = models.IntegerField(choices=RATINGS, default=NOT_RATED)
-    runtime = models.PositiveIntegerField(default=120)
+    runtime = models.PositiveIntegerField()
     actors = models.ManyToManyField(Actor, blank=True)
 
     # actors = models.ManyToManyField(
@@ -83,9 +83,8 @@ class Movie(models.Model):
 #     character_name = models.CharField(max_length=50)
 
 
-def movie_directory_path_with_uuid(instance, filename):
-    return "{}/{}.{}".format(instance.movie_id, uuid4(), filename.split(".")[-1])
-
+# def movie_directory_path_with_uuid(instance, filename):
+#     return "{}/{}.{}".format(instance.movie_id, uuid4(), filename.split(".")[-1])
 
 # class MovieImage(models.Model):
 #     image = models.ImageField(upload_to=movie_directory_path_with_uuid)
