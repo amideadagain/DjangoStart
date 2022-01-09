@@ -11,15 +11,8 @@ from rest_framework_extensions.mixins import NestedViewSetMixin
 from startapp.models import Movie, MovieManager, Actor, Vote, VoteManager
 from .serializers import MovieSerializer, ActorSerializer, VoteSerializer
 
-
-# class MovieList(APIView):
-#
-#     # authentication_classes = [authentication.TokenAuthentication]
-#     permission_classes = (permissions.IsAuthenticated,)
-#
-#     def get(self, request, format=None):
-#         movies = [movie.title for movie in Movie.objects.all()]
-#         return Response(movies)
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 
 class ReadOnly(BasePermission):
@@ -43,6 +36,7 @@ class MovieViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
             serializer = MovieSerializer(queryset, many=True)
             return Response(serializer.data)
 
+    @method_decorator(cache_page(60*60))
     def list(self, request):
         queryset = Movie.objects.all()
         return self.paginate_movies_api(request, queryset)
@@ -53,6 +47,7 @@ class MovieViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data)
 
+    @method_decorator(cache_page(60 * 60))
     def retrieve(self, request, pk=None):
         queryset = Movie.objects.api_get(pk)
 
@@ -67,6 +62,7 @@ class MovieViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
             serializer.save()
         return Response(serializer.data)
 
+    @method_decorator(cache_page(60 * 60))
     @action(methods=['get'], detail=False, name='Top movies')
     def top(self, request, limit=10):
         queryset = Movie.objects.top_movies(limit=limit)
