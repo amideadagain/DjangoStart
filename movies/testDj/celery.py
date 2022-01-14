@@ -20,7 +20,7 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'notify-user-every-day': {
         'task': 'movies_auth.tasks.notify_user',
-        'schedule': crontab()
+        'schedule': crontab(minute=0, hour=12)
     },
 }
 
