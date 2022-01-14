@@ -6,7 +6,7 @@ from .models import MyUser
 
 
 class UserAdmin(BaseUserAdmin):
-    list_display = ('username', 'email', 'dob', 'is_active', 'is_admin', 'is_staff')
+    list_display = ('username', 'email', 'dob', 'is_active', 'is_admin', 'is_staff', 'is_notified')
     search_fields = ('email', 'username',)
 
     filter_horizontal = ()
