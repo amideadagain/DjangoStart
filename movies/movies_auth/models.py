@@ -54,6 +54,7 @@ class MyUser(AbstractBaseUser):
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    is_notified = models.BooleanField(default=False)
 
     objects = MyUserManager()
     # I wanted to make login with email instead of username (as I did it in path('', views.sign_in, name='sign_in')),
