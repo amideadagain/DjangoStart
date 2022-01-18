@@ -13,9 +13,9 @@ class MovieViewSetListTestCase(APITestCase):
     @classmethod
     def setUpTestData(cls):
         """
-        Creating 12 movies for pagination tests
+        Creating 22 movies for pagination tests
         """
-        number_of_movies = 12
+        number_of_movies = 22
         for movie_number in range(number_of_movies):
             Movie.objects.create(
                 title='Test Film {}'.format(movie_number + 1),
@@ -32,10 +32,10 @@ class MovieViewSetListTestCase(APITestCase):
         response = self.client.get(self.url)
         data = response.data
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['count'], 12)
+        self.assertEqual(data['count'], 22)
         self.assertFalse(data['next'] is None)
         self.assertTrue(data['previous'] is None)
-        self.assertEqual(len(data['results']), 10)
+        self.assertEqual(len(data['results']), 20)
 
     def test_second_page(self):
         url = self.url + '?page=2'
@@ -86,7 +86,7 @@ class CreateMovieTestCase(APITestCase):
         request = self.factory.post(self.url, data, format='json')
         force_authenticate(request, user=self.user)
         response = self.create_view(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
         self.assertTrue(Movie.objects.get(title="Mad scientist girl"))
 
     def test_create_movie_post_unauthorised(self):
